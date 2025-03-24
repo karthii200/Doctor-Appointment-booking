@@ -25,10 +25,13 @@ app.use(moragan("dev"));
 
 
 
+const cors = require("cors");
+
 app.use(cors({
-  origin: "http://localhost:3000", // Allow frontend URL
-  credentials: true, // Allow cookies and authentication headers
+    origin: ["http://localhost:3000", "https://doctor-appointment-booking-bwdo.onrender.com"], // Allow both local & deployed frontend
+    credentials: true, // Allow cookies & authentication headers
 }));
+
 
 
 
