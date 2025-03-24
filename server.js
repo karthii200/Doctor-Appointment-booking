@@ -24,7 +24,7 @@ app.use(moragan("dev"));
 
 
 app.use(cors({
-  origin: ["https://your-render-frontend.onrender.com", "http://localhost:3000"],
+  origin: ["https://doctor-appointment-booking-bwdo.onrender.com", "http://localhost:3000"],
   credentials: true,
 }));
 
