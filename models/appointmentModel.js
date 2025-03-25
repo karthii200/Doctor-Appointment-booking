@@ -1,4 +1,44 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
+
+// const appointmentSchema = new mongoose.Schema(
+//   {
+//     userId: {
+//       type: String,
+//       required: true,
+//     },
+//     doctorId: {
+//       type: String,
+//       required: true,
+//     },
+//     doctorInfo: {
+//       type: String,
+//       required: true,
+//     },
+//     userInfo: {
+//       type: String,
+//       required: true,
+//     },
+//     date: {
+//       type: String,
+//       required: true,
+//     },
+//     status: {
+//       type: String,
+//       required: true,
+//       default: "pending",
+//     },
+//     time: {
+//       type: String,
+//       required: true,
+//     },
+//   },
+//   { timestamps: true }
+// );
+
+// const appointmentModel = mongoose.model("appointments", appointmentSchema);
+
+// module.exports = appointmentModel;
+import mongoose from "mongoose";
 
 const appointmentSchema = new mongoose.Schema(
   {
@@ -11,11 +51,11 @@ const appointmentSchema = new mongoose.Schema(
       required: true,
     },
     doctorInfo: {
-      type: String,
+      type: Object, // Change from String to Object for better data storage
       required: true,
     },
     userInfo: {
-      type: String,
+      type: Object, // Change from String to Object for better data storage
       required: true,
     },
     date: {
@@ -37,4 +77,4 @@ const appointmentSchema = new mongoose.Schema(
 
 const appointmentModel = mongoose.model("appointments", appointmentSchema);
 
-module.exports = appointmentModel;
+export default appointmentModel; // ✅ Export default

@@ -1,61 +1,111 @@
-const express = require("express");
-const {
+// const express = require("express");
+// const {
+//   loginController,
+//   registerController,
+//   authController,
+//   applyDoctorController,
+//   getAllNotificationController,
+//   deleteAllNotificationController,
+//   getAllDocotrsController,
+//   bookeAppointmnetController,
+//   bookingAvailabilityController,
+//   userAppointmentsController,
+// } = require("../controllers/userCtrl");
+// const authMiddleware = require("../middlewares/authMiddleware");
+
+// //router onject
+// const router = express.Router();
+
+// //routes
+// //LOGIN || POST
+// router.post("/login", loginController);
+
+// //REGISTER || POST
+// router.post("/register", registerController);
+
+// //Auth || POST
+// router.post("/getUserData", authMiddleware, authController);
+
+// //APply Doctor || POST
+// router.post("/apply-doctor", authMiddleware, applyDoctorController);
+
+// //Notifiaction  Doctor || POST
+// router.post(
+//   "/get-all-notification",
+//   authMiddleware,
+//   getAllNotificationController
+// );
+// //Notifiaction  Doctor || POST
+// router.post(
+//   "/delete-all-notification",
+//   authMiddleware,
+//   deleteAllNotificationController
+// );
+
+// //GET ALL DOC
+// router.get("/getAllDoctors", authMiddleware, getAllDocotrsController);
+
+// //BOOK APPOINTMENT
+// router.post("/book-appointment", authMiddleware, bookeAppointmnetController);
+
+// //Booking Avliability
+// router.post(
+//   "/booking-availbility",
+//   authMiddleware,
+//   bookingAvailabilityController
+// );
+
+// //Appointments List
+// router.get("/user-appointments", authMiddleware, userAppointmentsController);
+
+// module.exports = router;
+import express from "express";
+import {
   loginController,
   registerController,
   authController,
   applyDoctorController,
   getAllNotificationController,
   deleteAllNotificationController,
-  getAllDocotrsController,
-  bookeAppointmnetController,
+  getAllDoctorsController,
+  bookAppointmentController,
   bookingAvailabilityController,
   userAppointmentsController,
-} = require("../controllers/userCtrl");
-const authMiddleware = require("../middlewares/authMiddleware");
+} from "../controllers/userCtrl.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
-//router onject
+// ✅ Create Express router
 const router = express.Router();
 
-//routes
-//LOGIN || POST
+// ✅ Routes
+// LOGIN || POST
 router.post("/login", loginController);
 
-//REGISTER || POST
+// REGISTER || POST
 router.post("/register", registerController);
 
-//Auth || POST
+// AUTH || POST
 router.post("/getUserData", authMiddleware, authController);
 
-//APply Doctor || POST
+// APPLY DOCTOR || POST
 router.post("/apply-doctor", authMiddleware, applyDoctorController);
 
-//Notifiaction  Doctor || POST
-router.post(
-  "/get-all-notification",
-  authMiddleware,
-  getAllNotificationController
-);
-//Notifiaction  Doctor || POST
-router.post(
-  "/delete-all-notification",
-  authMiddleware,
-  deleteAllNotificationController
-);
+// GET ALL NOTIFICATIONS || POST
+router.post("/get-all-notification", authMiddleware, getAllNotificationController);
 
-//GET ALL DOC
-router.get("/getAllDoctors", authMiddleware, getAllDocotrsController);
+// DELETE ALL NOTIFICATIONS || POST
+router.post("/delete-all-notification", authMiddleware, deleteAllNotificationController);
 
-//BOOK APPOINTMENT
-router.post("/book-appointment", authMiddleware, bookeAppointmnetController);
+// GET ALL DOCTORS || GET
+router.get("/getAllDoctors", authMiddleware, getAllDoctorsController);
 
-//Booking Avliability
-router.post(
-  "/booking-availbility",
-  authMiddleware,
-  bookingAvailabilityController
-);
+// BOOK APPOINTMENT || POST
+router.post("/book-appointment", authMiddleware, bookAppointmentController);
 
-//Appointments List
+// CHECK BOOKING AVAILABILITY || POST
+router.post("/booking-availbility", authMiddleware, bookingAvailabilityController);
+
+// GET USER APPOINTMENTS || GET
 router.get("/user-appointments", authMiddleware, userAppointmentsController);
 
-module.exports = router;
+export default router;
