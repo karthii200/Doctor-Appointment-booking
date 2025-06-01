@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 // const express = require("express");
 // const {
 //   loginController,
@@ -60,9 +60,7 @@
 // router.get("/user-appointments", authMiddleware, userAppointmentsController);
 
 // module.exports = router;
-=======
 
->>>>>>> master
 import express from "express";
 import {
   loginController,

@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 // const express = require("express");
 // const {
 //   getDoctorInfoController,
@@ -30,9 +30,7 @@
 // router.post("/update-status", authMiddleware, updateStatusController);
 
 // module.exports = router;
-=======
 
->>>>>>> master
 import express from "express";
 import {
   getDoctorInfoController,
