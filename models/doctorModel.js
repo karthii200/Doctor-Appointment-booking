@@ -1,0 +1,59 @@
+
+import mongoose from "mongoose";
+
+const doctorSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: String,
+    },
+    firstName: {
+      type: String,
+      required: [true, "first name is required"],
+    },
+    lastName: {
+      type: String,
+      required: [true, "last name is required"],
+    },
+    phone: {
+      type: String,
+      required: [true, "phone no is required"],
+    },
+    email: {
+      type: String,
+      required: [true, "email is required"],
+    },
+    website: {
+      type: String,
+    },
+    address: {
+      type: String,
+      required: [true, "address is required"],
+    },
+    specialization: {
+      type: String,
+      required: [true, "specialization is required"],
+    },
+    experience: {
+      type: String,
+      required: [true, "experience is required"],
+    },
+    feesPerConsultation: {  // Fixed spelling error from "feesPerCunsaltation"
+      type: Number,
+      required: [true, "fee is required"],
+    },
+    status: {
+      type: String,
+      default: "pending",
+    },
+    timings: {
+      type: [String], // Array of strings (e.g., ["11:00", "15:00"])
+      required: [true, "work timing is required"],
+    },
+
+  },
+  { timestamps: true }
+);
+
+const doctorModel = mongoose.model("doctors", doctorSchema);
+
+export default doctorModel; // ✅ Export using ES Module syntax
