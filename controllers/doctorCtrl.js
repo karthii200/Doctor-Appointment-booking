@@ -64,37 +64,39 @@ export const getDoctorByIdController = async (req, res) => {
 };
 
 // ✅ Get doctor appointments
+// doctorCtrl.js - in doctorAppointmentsController
 export const doctorAppointmentsController = async (req, res) => {
-  try {
-    const doctor = await doctorModel.findOne({ userId: req.body.userId });
-    if (!doctor) {
-      return res.status(404).send({
-        success: false,
-        message: "Doctor not found",
-      });
+    try {
+        const doctor = await doctorModel.findOne({ userId: req.body.userId });
+        if (!doctor) {
+            return res.status(404).send({
+                success: false,
+                message: "Doctor not found",
+            });
+        }
+
+        const appointments = await appointmentModel.find({ doctorId: doctor._id });
+
+        const formattedAppointments = appointments.map((appointment) => ({
+            ...appointment._doc,
+            // Assuming `date` and `time` are stored as full Date objects
+            date: moment(appointment.date).format("DD-MM-YYYY"),
+            time: moment(appointment.time).format("hh:mm A"), // Now `appointment.time` is a Date object
+        }));
+
+        res.status(200).send({
+            success: true,
+            message: "Doctor appointments fetched successfully",
+            data: formattedAppointments,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            error,
+            message: "Error in fetching doctor appointments",
+        });
     }
-
-    const appointments = await appointmentModel.find({ doctorId: doctor._id });
-
-    const formattedAppointments = appointments.map((appointment) => ({
-      ...appointment._doc,
-      date: moment(appointment.date, "DD-MM-YYYY").format("DD-MM-YYYY"),
-      time: moment(appointment.time, "HH:mm").format("hh:mm A"), // 12-hour format with AM/PM
-    }));
-
-    res.status(200).send({
-      success: true,
-      message: "Doctor appointments fetched successfully",
-      data: formattedAppointments,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({
-      success: false,
-      error,
-      message: "Error in fetching doctor appointments",
-    });
-  }
 };
 
 // ✅ Update appointment status

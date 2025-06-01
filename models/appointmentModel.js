@@ -19,7 +19,7 @@ const appointmentSchema = new mongoose.Schema(
       required: true,
     },
     date: {
-      type: Date, // Use Date type for accurate date handling
+      type: Date, // ✅ Use Date type for accurate date handling
       required: true,
     },
     status: {
@@ -28,7 +28,7 @@ const appointmentSchema = new mongoose.Schema(
       default: "pending",
     },
     time: {
-      type: Date, // Use Date type for accurate time handling
+      type: Date, // ✅ Use Date type for accurate time handling
       required: true,
     },
   },
