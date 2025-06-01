@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // const express = require("express");
 // const {
 //   getAllUsersController,
@@ -22,6 +23,9 @@
 // );
 
 // module.exports = router;
+=======
+
+>>>>>>> master
 import express from "express";
 import {
   getAllUsersController,

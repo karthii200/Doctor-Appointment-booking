@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // const userModel = require("../models/userModels");
 // const bcrypt = require("bcryptjs");
 // const jwt = require("jsonwebtoken");
@@ -285,6 +286,9 @@
 //   bookingAvailabilityController,
 //   userAppointmentsController,
 // };
+=======
+
+>>>>>>> master
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import moment from "moment";
@@ -341,15 +345,53 @@ export const authController = async (req, res) => {
 };
 
 // Apply Doctor Controller
+<<<<<<< HEAD
 export const applyDoctorController = async (req, res) => {
   try {
     const newDoctor = new doctorModel({ ...req.body, status: "pending" });
+=======
+// export const applyDoctorController = async (req, res) => {
+//   try {
+//     const newDoctor = new doctorModel({ ...req.body, status: "pending" });
+//     await newDoctor.save();
+
+//     const adminUser = await userModel.findOne({ isAdmin: true });
+//     adminUser.notification.push({
+//       type: "apply-doctor-request",
+//       message: `${newDoctor.firstName} ${newDoctor.lastName} has applied for a Doctor Account`,
+//       data: { doctorId: newDoctor._id, name: `${newDoctor.firstName} ${newDoctor.lastName}`, onClickPath: "/admin/doctors" },
+//     });
+
+//     await adminUser.save();
+//     res.status(201).send({ success: true, message: "Doctor Account Application Submitted" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send({ success: false, error, message: "Error While Applying for Doctor" });
+//   }
+// };
+
+export const applyDoctorController = async (req, res) => {
+  try {
+    // Format timings safely in backend
+    const formattedTimings = [
+      moment(req.body.timings[0]).format("HH:mm"),
+      moment(req.body.timings[1]).format("HH:mm"),
+    ];
+
+    const newDoctor = new doctorModel({
+      ...req.body,
+      timings: formattedTimings,
+      status: "pending",
+    });
+
+>>>>>>> master
     await newDoctor.save();
 
     const adminUser = await userModel.findOne({ isAdmin: true });
     adminUser.notification.push({
       type: "apply-doctor-request",
       message: `${newDoctor.firstName} ${newDoctor.lastName} has applied for a Doctor Account`,
+<<<<<<< HEAD
       data: { doctorId: newDoctor._id, name: `${newDoctor.firstName} ${newDoctor.lastName}`, onClickPath: "/admin/doctors" },
     });
 
@@ -375,6 +417,74 @@ export const getAllNotificationController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Error in marking notifications", success: false, error });
+=======
+      data: {
+        doctorId: newDoctor._id,
+        name: `${newDoctor.firstName} ${newDoctor.lastName}`,
+        onClickPath: "/admin/doctors",
+      },
+    });
+
+    await adminUser.save();
+    res.status(201).send({
+      success: true,
+      message: "Doctor Account Application Submitted",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: "Error While Applying for Doctor",
+    });
+  }
+};
+
+
+// Get Notifications
+// export const getAllNotificationController = async (req, res) => {
+//   try {
+//     const user = await userModel.findById(req.body.userId);
+//     if (!user) return res.status(404).send({ message: "User not found", success: false });
+
+//     user.seenNotification = [...user.seenNotification, ...user.notification];
+//     user.notification = [];
+//     await user.save();
+
+//     res.status(200).send({ success: true, message: "All notifications marked as read", data: user });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send({ message: "Error in marking notifications", success: false, error });
+//   }
+// };
+export const getAllNotificationController = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.body.userId);
+    if (!user)
+      return res.status(404).send({ message: "User not found", success: false });
+
+    // Defensive: ensure these are arrays
+    user.notification = Array.isArray(user.notification) ? user.notification : [];
+    user.seenNotification = Array.isArray(user.seenNotification) ? user.seenNotification : [];
+
+    user.seenNotification = [...user.seenNotification, ...user.notification];
+    user.notification = [];
+
+    console.log("User before saving:", user);
+
+    await user.save();
+
+    res.status(200).send({
+      success: true,
+      message: "All notifications marked as read",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error in getAllNotificationController:", error);
+    res
+      .status(500)
+      .send({ message: "Error in marking notifications", success: false, error: error.message });
+>>>>>>> master
   }
 };
 
@@ -383,7 +493,11 @@ export const deleteAllNotificationController = async (req, res) => {
   try {
     const user = await userModel.findById(req.body.userId);
     user.notification = [];
+<<<<<<< HEAD
     user.seennotification = [];
+=======
+    user.seenNotification = [];
+>>>>>>> master
     await user.save();
     
     res.status(200).send({ success: true, message: "Notifications Deleted Successfully" });
@@ -405,12 +519,47 @@ export const getAllDoctorsController = async (req, res) => {
 };
 
 // Book Appointment
+<<<<<<< HEAD
 export const bookAppointmentController = async (req, res) => {
   try {
     req.body.date = moment(req.body.date, "DD-MM-YYYY").toISOString();
     req.body.time = moment(req.body.time, "HH:mm").toISOString();
     req.body.status = "pending";
 
+=======
+// export const bookAppointmentController = async (req, res) => {
+//   try {
+//     req.body.date = moment(req.body.date, "DD-MM-YYYY").toISOString();
+//     req.body.time = moment(req.body.time, "HH:mm").toISOString();
+//     req.body.status = "pending";
+
+//     const newAppointment = new appointmentModel(req.body);
+//     await newAppointment.save();
+
+//     const doctor = await userModel.findById(req.body.doctorInfo.userId);
+//     doctor.notification.push({
+//       type: "New-appointment-request",
+//       message: `New Appointment Request from ${req.body.userInfo.name}`,
+//       onClickPath: "/user/appointments",
+//     });
+
+//     await doctor.save();
+//     res.status(200).send({ success: true, message: "Appointment Booked Successfully" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send({ success: false, error, message: "Error While Booking Appointment" });
+//   }
+// };
+// ✅ Book Appointment (Fixed)
+
+// ✅ Book Appointment (Corrected Date/Time)
+export const bookAppointmentController = async (req, res) => {
+  try {
+    req.body.date = moment(req.body.date, "DD-MM-YYYY").format("YYYY-MM-DD");
+    req.body.time = moment(req.body.time, "HH:mm").format("HH:mm");
+
+    req.body.status = "pending";
+>>>>>>> master
     const newAppointment = new appointmentModel(req.body);
     await newAppointment.save();
 
@@ -453,10 +602,38 @@ export const bookingAvailabilityController = async (req, res) => {
 };
 
 // Get User Appointments
+<<<<<<< HEAD
 export const userAppointmentsController = async (req, res) => {
   try {
     const appointments = await appointmentModel.find({ userId: req.body.userId });
     res.status(200).send({ success: true, message: "User Appointments Fetched", data: appointments });
+=======
+// export const userAppointmentsController = async (req, res) => {
+//   try {
+//     const appointments = await appointmentModel.find({ userId: req.body.userId });
+//     res.status(200).send({ success: true, message: "User Appointments Fetched", data: appointments });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send({ success: false, error, message: "Error Fetching Appointments" });
+//   }
+// };
+// ✅ Get User Appointments (Fixed)
+export const userAppointmentsController = async (req, res) => {
+  try {
+    const appointments = await appointmentModel.find({ userId: req.body.userId });
+
+    const formattedAppointments = appointments.map((appointment) => ({
+      ...appointment._doc,
+      date: moment(appointment.date, "DD-MM-YYYY").format("DD-MM-YYYY"),
+      time: moment(appointment.time, "HH:mm").format("HH:mm A"), // Display in 12-hour format (AM/PM)
+    }));
+
+    res.status(200).send({ 
+      success: true, 
+      message: "User Appointments Fetched", 
+      data: formattedAppointments 
+    });
+>>>>>>> master
   } catch (error) {
     console.error(error);
     res.status(500).send({ success: false, error, message: "Error Fetching Appointments" });

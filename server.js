@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // // const express = require("express");
 // // const colors = require("colors");
 // // const moragan = require("morgan");
@@ -108,6 +109,9 @@
 // app.listen(PORT, () => {
 //   console.log(`🚀 Server running on port ${PORT}`.bgCyan.white);
 // });
+=======
+
+>>>>>>> master
 import express from "express";
 import colors from "colors";
 import morgan from "morgan";

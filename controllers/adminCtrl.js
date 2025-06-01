@@ -1,3 +1,4 @@
+
 // const doctorModel = require("../models/doctorModel");
 // const userModel = require("../models/userModels");
 
@@ -71,6 +72,7 @@
 //   getAllUsersController,
 //   changeAccountStatusController,
 // };
+
 import doctorModel from "../models/doctorModel.js"; // ✅ Use ES6 import
 import userModel from "../models/userModels.js"; // ✅ Use ES6 import
 
