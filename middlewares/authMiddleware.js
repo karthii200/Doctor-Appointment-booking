@@ -4,12 +4,6 @@ const authMiddleware = async (req, res, next) => {
   try {
     const token = req.headers["authorization"]?.split(" ")[1];
 
-    // --- ADDED LOG ---
-    console.log("Auth Middleware: Received Authorization header:", req.headers["authorization"]);
-    console.log("Auth Middleware: Extracted Token:", token);
-    console.log("Auth Middleware: JWT_SECRET from .env:", process.env.JWT_SECRET);
-    // --- END ADDED LOG ---
-
     if (!token) {
       console.log("Auth Middleware: No token found after split."); // Added for clarity
       return res.status(401).send({

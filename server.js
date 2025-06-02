@@ -40,16 +40,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // --- DEBUGGING LOGS: DO NOT REMOVE THESE YET ---
-      console.log('--- CORS Debugging Info ---');
-      console.log('Received Origin:', origin);
-      console.log('Allowed Origins Array:', allowedOrigins);
-      console.log('Does Allowed Origins include received origin?', allowedOrigins.includes(origin));
-      console.log('---------------------------');
-      // --- END DEBUGGING LOGS ---
-
-      // Allow requests with no origin (like mobile apps, or same-origin in some cases)
-      // or if the origin is in our allowed list
+      
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
