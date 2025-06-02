@@ -264,7 +264,8 @@ const loginController = async (req, res) => {
 
     const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) return res.status(200).send({ message: "Invalid Email or Password", success: false });
-
+    console.log("Login Controller: JWT_SECRET used for signing:", process.env.JWT_SECRET);
+    console.log("Login Controller: JWT_SECRET used for signing:", process.env.JWT_SECRET);
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
     res.status(200).send({ message: "Login Success", success: true, token });
   } catch (error) {
@@ -368,125 +369,68 @@ const getAllDoctorsController = async (req, res) => {
   }
 };
 
-// ✅ Updated Book Appointment Controller
-// const bookAppointmentController = async (req, res) => {
-//   try {
-//     if (!req.body.date || !req.body.time) {
-//       return res.status(400).send({ success: false, message: "Date and time are required" });
-//     }
-
-//     const formattedDate = moment(req.body.date, "DD-MM-YYYY").toDate();
-//     if (!formattedDate || isNaN(formattedDate.getTime())) {
-//       return res.status(400).send({ success: false, message: "Invalid date format" });
-//     }
-
-//     const [hours, minutes] = req.body.time.split(":");
-//     if (hours === undefined || minutes === undefined) {
-//       return res.status(400).send({ success: false, message: "Invalid time format" });
-//     }
-
-//     const fullTime = moment(formattedDate).set({ hour: +hours, minute: +minutes }).toDate();
-
-//     const newAppointment = new appointmentModel({
-//       ...req.body,
-//       date: formattedDate,
-//       time: fullTime,
-//       status: "pending",
-//     });
-
-//     await newAppointment.save();
-
-//     if (!req.body.doctorInfo?.userId) {
-//       return res.status(400).send({ success: false, message: "Doctor userId is required" });
-//     }
-
-//     const doctorUser = await userModel.findById(req.body.doctorInfo.userId);
-
-//     if (!doctorUser) {
-//       return res.status(404).send({ success: false, message: "Doctor user not found" });
-//     }
-
-//     doctorUser.notification = doctorUser.notification || [];
-
-//     const patientName = req.body.userInfo?.name || "Someone";
-
-//     doctorUser.notification.push({
-//       type: "New-appointment-request",
-//       message: `New Appointment Request from ${patientName}`,
-//       onClickPath: "/user/appointments",
-//     });
-
-//     await doctorUser.save();
-
-//     res.status(200).send({ success: true, message: "Appointment Booked Successfully" });
-//   } catch (error) {
-//     console.error("Book Appointment Error:", error);
-//     res.status(500).send({ success: false, error, message: "Error While Booking Appointment" });
-//   }
-// };
-// userCtrl.js - in bookAppointmentController
-// userCtrl.js - in bookAppointmentController
-// userCtrl.js - in bookAppointmentController
 const bookAppointmentController = async (req, res) => {
-  try {
-    if (!req.body.date || !req.body.time) {
-      return res.status(400).send({ success: false, message: "Date and time are required" });
+  try {
+    if (!req.body.date || !req.body.time) {
+      return res.status(400).send({ success: false, message: "Date and time are required" });
+    }
+
+    const { date, time, doctorInfo, userInfo, userId, ...restOfBody } = req.body; // Removed doctorId from destructuring as we'll find it
+
+    const appointmentDateTime = moment(`${date} ${time}`, "DD-MM-YYYY HH:mm");
+
+    if (!appointmentDateTime.isValid()) {
+      return res.status(400).send({ success: false, message: "Invalid date or time format" });
+    }
+
+    // --- NEW LOGIC START ---
+    // Find the actual doctorModel document using the userId from doctorInfo
+    const doctorProfile = await doctorModel.findOne({ userId: doctorInfo.userId });
+
+    if (!doctorProfile) {
+        return res.status(404).send({ success: false, message: "Doctor profile not found for booking." });
     }
 
-    // Destructure req.body to extract date, time, doctorInfo, userInfo, doctorId, userId
-    // and collect the rest of the properties in 'restOfBody'.
-    const { date, time, doctorInfo, userInfo, doctorId, userId, ...restOfBody } = req.body;
+    // Now use doctorProfile._id for the appointmentModel.doctorId field
+    const actualDoctorIdToSave = doctorProfile._id;
+    // --- NEW LOGIC END ---
 
-    // Combine date and time into a single moment object
-    const appointmentDateTime = moment(`${date} ${time}`, "DD-MM-YYYY HH:mm");
+    const newAppointment = new appointmentModel({
+      ...restOfBody,
+      doctorId: actualDoctorIdToSave, // Use the correct doctor ID from doctorModel
+      userId: userId, // This is the patient's userId
+      doctorInfo: doctorInfo,
+      userInfo: userInfo,
+      date: appointmentDateTime.toDate(),
+      time: appointmentDateTime.toDate(),
+      status: "pending",
+    });
 
-    if (!appointmentDateTime.isValid()) {
-      return res.status(400).send({ success: false, message: "Invalid date or time format" });
-    }
+    await newAppointment.save();
 
-    const newAppointment = new appointmentModel({
-      ...restOfBody, // This spreads any other properties from req.body (e.g., any new fields you might add later)
-      // Explicitly set the required fields with the correct types
-      doctorId: doctorId,
-      userId: userId,
-      doctorInfo: doctorInfo,
-      userInfo: userInfo,
-      date: appointmentDateTime.toDate(), // This is the ONLY date value passed to the model
-      time: appointmentDateTime.toDate(), // This is the ONLY time value passed to the model
-      status: "pending",
-    });
+    // Notify doctor (this part should already be working as you said notifications work)
+    const doctorUser = await userModel.findById(doctorInfo.userId);
+    if (!doctorUser) {
+        return res.status(404).send({ success: false, message: "Doctor user not found for notification" });
+    }
+    doctorUser.notification = doctorUser.notification || [];
+    const patientName = userInfo?.name || "Someone";
+    doctorUser.notification.push({
+      type: "New-appointment-request",
+      message: `New Appointment Request from ${patientName}`,
+      onClickPath: "/doctor/appointments", // Changed this to doctor appointments path if needed
+    });
+    await doctorUser.save();
 
-    await newAppointment.save(); // This should now succeed
-
-    // ... (rest of your existing notification logic, ensure doctorInfo and userInfo are used from destructured variables)
-    const doctorUser = await userModel.findById(doctorInfo.userId); // Use destructured doctorInfo
-    if (!doctorUser) {
-        return res.status(404).send({ success: false, message: "Doctor user not found" });
-    }
-    doctorUser.notification = doctorUser.notification || [];
-    const patientName = userInfo?.name || "Someone"; // Use destructured userInfo
-    doctorUser.notification.push({
-      type: "New-appointment-request",
-      message: `New Appointment Request from ${patientName}`,
-      onClickPath: "/user/appointments",
-    });
-    await doctorUser.save();
-
-    res.status(200).send({ success: true, message: "Appointment Booked Successfully" });
-  // userCtrl.js - in bookAppointmentController's catch block
-} catch (error) {
-    // --- IMPORTANT DEBUGGING LOG ---
-    console.error("Backend Booking Error (Detailed):", JSON.stringify(error, null, 2));
-    // --- END DEBUGGING LOG ---
-
-    // Send more detailed error message to the frontend for debugging
-    res.status(500).send({
-        success: false,
-        message: `Error While Booking Appointment: ${error.message || 'Unknown error'}`,
-        // If it's a Mongoose validation error, it will have an 'errors' property
-        error: error.errors ? error.errors : error.message, // Send specific validation errors if present
-    });
-}
+    res.status(200).send({ success: true, message: "Appointment Booked Successfully" });
+  } catch (error) {
+    console.error("Book Appointment Error:", error);
+    res.status(500).send({
+        success: false,
+        message: `Error While Booking Appointment: ${error.message || 'Unknown error'}`,
+        error: error.errors ? error.errors : error.message,
+    });
+  }
 };
 // Check Appointment Availability
 // userCtrl.js - in bookingAvailabilityController
